@@ -61,25 +61,17 @@ public class TweetReader implements Reader {
 	}
 	
 	private void readHashtags( JsonNode node) {
-		
-		ZkClient client = new ZkClient(Top3App.kafkaURL);
-		
+		String value;
+		String topic;
+		String timestamp;
 		for (JsonNode hashtag : node.get(ENTITIES).get(HASHTAGS)) {
-			
 			if (checkNode(hashtag, TEXT)) {
-				String value = hashtag.get(TEXT).toString().replace("\"", "");
-				String topic = node.get(LANGUAGE).toString().replace("\"", "");
-				try {
-					if (!AdminUtils.topicExists(client, topic)) {
-						AdminUtils.createTopic(client, topic, 2, 1, new Properties());
-					}
-					producer.send(new ProducerRecord<String, String>(topic, value)).get();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				}
-				System.out.println("Hashtag sent: " + value);
+				value = hashtag.get(TEXT).toString().replace("\"", "");
+				topic = node.get(LANGUAGE).toString().replace("\"", "");
+				timestamp = node.get(TIMESTAMP).toString();
+				producer.send(new ProducerRecord<>(topic,timestamp,value));
+				//TODO Comment debug
+				System.out.println("Hashtag sent: " + topic+";"+value+";"+timestamp);
 			}
 		}
 	}
@@ -125,8 +117,8 @@ public class TweetReader implements Reader {
 		try {
 			readStream(new FileInputStream(file));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.exit(2);
 		}
 	}
 
