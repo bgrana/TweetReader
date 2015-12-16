@@ -3,6 +3,7 @@ package master2015;
 import java.util.Properties;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 
 public class Top3App {
 
@@ -32,12 +33,12 @@ public class Top3App {
 
 		// Init Kafka producer
 		Properties props = new Properties();
-		props.put("bootstrap.servers", kafkaURL);
-		props.put("retries", "3");
-		props.put("acks", "all");
-		props.put("batch.size", 200);
-		props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaURL);
+		props.put(ProducerConfig.RETRIES_CONFIG, "3");
+		props.put(ProducerConfig.ACKS_CONFIG, "all");
+		props.put(ProducerConfig.BATCH_SIZE_CONFIG, 200);
+		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
 		KafkaProducer <String, String> producer = new KafkaProducer<>(props);
 
 		reader = new TweetReader(apiKey, apiSecret, token, tokenSecret, producer);
