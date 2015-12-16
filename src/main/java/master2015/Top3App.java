@@ -19,8 +19,8 @@ public class Top3App {
 
 	public static void main(String[] args) {
 
-		if ((args.length != 0 && args[0].equals("1") && args.length != 6) || args.length != 7) {
-			System.out.println("Incorrect arguments: " + args.toString());
+		if ((args.length != 0 && args[0].equals("1") && args.length != 7) || args.length != 6) {
+			System.out.println("Incorrect arguments");
 			System.exit(1);
 		}
 
