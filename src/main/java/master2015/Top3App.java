@@ -12,7 +12,7 @@ public class Top3App {
 	private static String token;
 	private static String tokenSecret;
 	private static String mode; // 1: File, 2: URL
-	private static String kafkaURL; // IP:port
+	protected static String kafkaURL; // IP:port
 	private static String fileName;
 
 	private static TweetReader reader;

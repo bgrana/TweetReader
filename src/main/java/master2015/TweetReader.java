@@ -5,8 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
+import org.I0Itec.zkclient.ZkClient;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.scribe.builder.ServiceBuilder;
@@ -23,6 +25,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kafka.admin.AdminUtils;
 
 public class TweetReader implements Reader {
 	private OAuthService service;
@@ -58,19 +62,24 @@ public class TweetReader implements Reader {
 	
 	private void readHashtags( JsonNode node) {
 		
+		ZkClient client = new ZkClient(Top3App.kafkaURL);
+		
 		for (JsonNode hashtag : node.get(ENTITIES).get(HASHTAGS)) {
 			
 			if (checkNode(hashtag, TEXT)) {
 				String value = hashtag.get(TEXT).toString().replace("\"", "");
-				String topic = node.get(LANGUAGE).toString();
+				String topic = node.get(LANGUAGE).toString().replace("\"", "");
 				try {
+					if (!AdminUtils.topicExists(client, topic)) {
+						AdminUtils.createTopic(client, topic, 2, 1, new Properties());
+					}
 					producer.send(new ProducerRecord<String, String>(topic, value)).get();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
 					e.printStackTrace();
 				}
-				// System.out.println(value);
+				System.out.println("Hashtag sent: " + value);
 			}
 		}
 	}
