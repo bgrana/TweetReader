@@ -68,8 +68,8 @@ public class TweetReader implements Reader {
 			if (checkNode(hashtag, TEXT)) {
 				value = hashtag.get(TEXT).toString().replace("\"", "");
 				topic = node.get(LANGUAGE).toString().replace("\"", "");
-				timestamp = node.get(TIMESTAMP).toString();
-				producer.send(new ProducerRecord<>(topic,timestamp,value));
+				timestamp = node.get(TIMESTAMP).toString().replace("\"", "");
+				producer.send(new ProducerRecord<String, String>(topic,timestamp + ";" + value));
 				//TODO Comment debug
 				System.out.println("Hashtag sent: " + topic+";"+value+";"+timestamp);
 			}
