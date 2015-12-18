@@ -71,7 +71,7 @@ public class TweetReader implements Reader {
 				timestamp = node.get(TIMESTAMP).toString().replace("\"", "");
 				producer.send(new ProducerRecord<String, String>(topic,timestamp + ";" + value));
 				//TODO Comment debug
-				System.out.println("Hashtag sent: " + topic+";"+value+";"+timestamp);
+				//System.out.println("Hashtag sent: " + topic+";"+value+";"+timestamp);
 			}
 		}
 	}
