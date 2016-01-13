@@ -33,18 +33,21 @@ public class TweetReader implements Reader {
 	private Token accessToken;
 	private KafkaProducer <String, String> producer;
 
-	public TweetReader(String apiKey, String apiSecret, String token,
-			String tokenSecret, KafkaProducer<String, String> producer) {
+	public TweetReader(KafkaProducer<String, String> producer){
+		this.producer = producer;
+	}
+
+	public void connect(String apiKey, String apiSecret, String token,
+			String tokenSecret) {
 		
 		service = new ServiceBuilder()
 				.provider(TwitterApi.class)
 				.apiKey(apiKey)
 				.apiSecret(apiSecret)
 				.build();
-
 		accessToken = new Token(token, tokenSecret);
-		this.producer = producer;
 	}
+
 
 	private boolean isStartObject(JsonToken token) {
 		if (token == JsonToken.START_OBJECT) {
@@ -90,6 +93,10 @@ public class TweetReader implements Reader {
 				if (isStartObject(token)) {
 					
 					node = parser.readValueAsTree();
+
+					//TODO Debug, comment in final version
+					//System.out.println(node.toString());
+
 					if (checkNode(node, LANGUAGE) && checkNode(node, ENTITIES) &&
 							checkNode(node.get(ENTITIES), HASHTAGS)) {
 						
